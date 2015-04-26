@@ -7,13 +7,19 @@ class CorsMiddleware
 {
 
 	protected $settings = array(
-		'origin' => '*',    // Wide Open!
+		'origin' => '*',
 		'allowMethods' => 'GET,HEAD,PUT,POST,DELETE'
 	);
 
+	public function __construct()
+	{
+		$this->origin = env('CORS_ORIGIN', $this->settings['origin']);
+		$this->allowMethods = env('CORS_METHODS', $this->settings['allowMethods']);
+	}
+
 	protected function setOrigin($req, $rsp)
 	{
-		$origin = $this->settings['origin'];
+		$origin = $this->origin;
 		if (is_callable($origin))
 		{
 			// Call origin callback with request origin
@@ -50,8 +56,8 @@ class CorsMiddleware
 	}
 
 	protected function setAllowMethods($req, $rsp) {
-		if (isset($this->settings['allowMethods'])) {
-			$allowMethods = $this->settings['allowMethods'];
+		if (isset($this->allowMethods)) {
+			$allowMethods = $this->allowMethods;
 			if (is_array($allowMethods))
 			{
 				$allowMethods = implode(", ", $allowMethods);
