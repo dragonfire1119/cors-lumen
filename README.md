@@ -18,8 +18,10 @@ Run `composer require "dragonfire1119/cors-lumen:dev-master"` to install cors-lu
 
 ### Add CORS ServiceProvider ###
 
-If you want to allow OPTIONS method then your going to need to put this in
-`$app->register('Dragonfire1119\Cors\Providers\CorsServiceProvider');` `bootstrap/app.php` file.
+If you want to allow OPTIONS method then your going to need to enable the CorsServiceProvider in the `bootstrap/app.php` file.
+```php
+$app->register('Dragonfire1119\Cors\Providers\CorsServiceProvider');
+```
 
 ### Global CORS ###
 
@@ -43,6 +45,10 @@ $app->get('/api/test', ['middleware' => 'cors', function() {
 ```
 
 More info. - http://lumen.laravel.com/docs/middleware#registering-middleware
+
+## Contributing ##
+
+If you have a change fork it & make a pull request. :)
 
 ## License ##
 
