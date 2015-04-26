@@ -21,8 +21,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Dragonfire1119\\Cors\\Middleware\\": ".",
-            "Dragonfire1119\\Cors\\Providers\\": "."
+             "Dragonfire1119\\Cors\\": "src/"
         }
     },
     "config": {
