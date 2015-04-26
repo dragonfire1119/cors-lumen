@@ -16,6 +16,11 @@ Run `composer require "dragonfire1119/cors-lumen:dev-master"` to install cors-lu
 
 ## Usage ##
 
+### Add CORS ServiceProvider ###
+
+If you want to allow OPTIONS method then your going to need to put this in
+`$app->register('Dragonfire1119\Cors\Providers\CorsServiceProvider');` `bootstrap/app.php` file.
+
 ### Global CORS ###
 
 If you want CORS enabled for every HTTP request to your application, simply list the middleware class `dragonfire1119\Cors\Middleware\CorsMiddleware` in the $app->middleware() call of your `bootstrap/app.php` file.
