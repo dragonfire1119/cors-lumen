@@ -1,6 +1,9 @@
 CORS for Lumen
 ==========
 
+[![Latest Stable Version](https://poser.pugx.org/dragonfire1119/cors-lumen/v/stable)](https://packagist.org/packages/dragonfire1119/cors-lumen)
+[![License](https://poser.pugx.org/dragonfire1119/cors-lumen/license)](https://packagist.org/packages/dragonfire1119/cors-lumen)
+
 [Cross-origin resource sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) (CORS) Middleware for [Lumen micro-framework](http://lumen.laravel.com/).
 
 ## Installation ##
