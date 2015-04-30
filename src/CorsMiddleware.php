@@ -2,107 +2,75 @@
 
 use Closure;
 use Illuminate\Http\Response;
+use Asm89\Stack\CorsService;
 
 class CorsMiddleware
 {
 
-	protected $settings = array(
-		'origin' => '*',
-		'allowMethods' => 'GET,HEAD,PUT,POST,DELETE'
+	protected $defaultSettings = array(
+		'allowedHeaders'      	=> 'x-allowed-header,x-other-allowed-header',
+		'allowedMethods'      	=> 'GET,HEAD,PUT,POST,DELETE',
+		'allowedOrigins'      	=> '*',
+		'exposedHeaders'      	=> false,
+		'maxAge'             	=> false,
+		'supportsCredentials' 	=> false,
 	);
 
 	public function __construct()
 	{
-		$this->origin = env('CORS_ORIGIN', $this->settings['origin']);
-		$this->allowMethods = env('CORS_METHODS', $this->settings['allowMethods']);
+		$this->allowedHeaders 	= env('CORS_HEADERS', $this->defaultSettings['allowedHeaders']);
+		$this->allowedMethods 	= env('CORS_METHODS', $this->defaultSettings['allowedMethods']);
+		$this->allowedOrigins 		= env('CORS_ORIGINS', $this->defaultSettings['allowedOrigins']);
+		$this->exposedHeaders 	= env('CORS_EXPOSED_HEADERS', $this->defaultSettings['exposedHeaders']);
+		$this->maxAge 		= env('CORS_MAX_AGE', $this->defaultSettings['maxAge']);
+		$this->supportsCredentials 	= env('CORS_SUPPORTS_CREDENTIALS', $this->defaultSettings['supportsCredentials']);
 	}
 
-	protected function setOrigin($req, $rsp)
-	{
-		$origin = $this->origin;
-		if (is_callable($origin))
-		{
-			// Call origin callback with request origin
-			$origin = call_user_func($origin, $req->header("Origin"));
-		}
-		$rsp->header('Access-Control-Allow-Origin', $origin);
-	}
+	/**
+	 * Set the cors headers
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  \Illuminate\Http\Response  $response
+	 * @return void
+	 */
+	protected function setCorsHeaders($request, $response) {
 
-	protected function setExposeHeaders($req, $rsp) {
-		if (isset($this->settings->exposeHeaders))
-		{
-			$exposeHeaders = $this->settings->exposeHeaders;
-			if (is_array($exposeHeaders))
-			{
-				$exposeHeaders = implode(", ", $exposeHeaders);
-			}
+		$allowedHeaders 	= explode(",", $this->allowedHeaders);
+		$allowedMethods 	= explode(",", $this->allowedMethods);
+		$allowedOrigins 	= explode(",", $this->allowedOrigins);
 
-			$rsp->header('Access-Control-Expose-Headers', $exposeHeaders);
-		}
-	}
-
-	protected function setMaxAge($req, $rsp) {
-		if (isset($this->settings['maxAge']))
-		{
-			$rsp->header('Access-Control-Max-Age', $this->settings['maxAge']);
-		}
-	}
-
-	protected function setAllowCredentials($req, $rsp) {
-		if (isset($this->settings['allowCredentials']) && $this->settings['allowCredentials'] === True)
-		{
-			$rsp->header('Access-Control-Allow-Credentials', 'true');
-		}
-	}
-
-	protected function setAllowMethods($req, $rsp) {
-		if (isset($this->allowMethods)) {
-			$allowMethods = $this->allowMethods;
-			if (is_array($allowMethods))
-			{
-				$allowMethods = implode(", ", $allowMethods);
-			}
-
-			$rsp->header('Access-Control-Allow-Methods', $allowMethods);
-		}
-	}
-
-	protected function setAllowHeaders($req, $rsp) {
-		if (isset($this->settings['allowHeaders'])) {
-			$allowHeaders = $this->settings['allowHeaders'];
-			if (is_array($allowHeaders))
-			{
-				$allowHeaders = implode(", ", $allowHeaders);
-			}
-		}
-		else
-		{
-			// Otherwise, use request headers
-			$allowHeaders = $req->header("Access-Control-Request-Headers");
+		if($this->exposedHeaders != false) {
+			$exposedHeaders 	= explode(",", $this->exposedHeaders);
+		} else {
+			$exposedHeaders 	= false;
 		}
 
-		if (isset($allowHeaders)) {
-			$rsp->header('Access-Control-Allow-Headers', $allowHeaders);
+		if($this->maxAge != false) {
+			$maxAge 	= explode(",", $this->maxAge);
+		} else {
+			$maxAge 	= false;
 		}
-	}
 
-	protected function setCorsHeaders($req, $rsp) {
+		if($this->supportsCredentials != false) {
+			$supportsCredentials 	= explode(",", $this->supportsCredentials);
+		} else {
+			$supportsCredentials 	= false;
+		}
 
-		// http://www.html5rocks.com/static/images/cors_server_flowchart.png
-		// Pre-flight
-		if ($req->isMethod('OPTIONS')) {
-			$this->setOrigin($req, $rsp);
-			$this->setMaxAge($req, $rsp);
-			$this->setAllowCredentials($req, $rsp);
-			$this->setAllowMethods($req, $rsp);
-			$this->setAllowHeaders($req, $rsp);
-		}
-		else
-		{
-			$this->setOrigin($req, $rsp);
-			$this->setExposeHeaders($req, $rsp);
-			$this->setAllowCredentials($req, $rsp);
-		}
+		$cors = new CorsService(array(
+			'allowedHeaders'      	=> $allowedHeaders,
+			'allowedMethods'      	=> $allowedMethods,
+			'allowedOrigins'      	=> $allowedOrigins,
+			'exposedHeaders'      	=> $exposedHeaders,
+			'maxAge'              	=> $maxAge,
+			'supportsCredentials' 	=> $supportsCredentials,
+		));
+
+		$cors->addActualRequestHeaders($response, $request);
+		$cors->handlePreflightRequest($request);
+		$cors->isActualRequestAllowed($request);
+		$cors->isCorsRequest($request);
+		$cors->isPreflightRequest($request);
 	}
 
 	/**
@@ -114,14 +82,7 @@ class CorsMiddleware
 	 */
 	public function handle($request, Closure $next) {
 
-		if ($request->isMethod('OPTIONS'))
-		{
-			$response = new Response("", 200);
-		}
-		else
-		{
-			$response = $next($request);
-		}
+		$response = $next($request);
 
 		$this->setCorsHeaders($request, $response);
 
