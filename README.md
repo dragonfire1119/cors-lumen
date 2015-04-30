@@ -6,10 +6,6 @@ CORS for Lumen
 
 [Cross-origin resource sharing](https://developer.mozilla.org/en-US/docs/Web/HTTP/Access_control_CORS) (CORS) Middleware for [Lumen micro-framework](http://lumen.laravel.com/).
 
-## Installation ##
-
-After you install lumen as per [lumen docs](http://lumen.laravel.com/docs/installation#install-lumen), install cors-lumen from `src` folder.
-
 ### Install with [Composer](https://packagist.org/packages/dragonfire1119/cors-lumen) ###
 
 Run `composer require "dragonfire1119/cors-lumen:dev-master"` to install cors-lumen.
