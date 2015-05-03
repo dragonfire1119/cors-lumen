@@ -21,7 +21,7 @@ $app->register('Dragonfire1119\Cors\Providers\CorsServiceProvider');
 
 ### Global CORS ###
 
-If you want CORS enabled for every HTTP request to your application, simply list the middleware class `dragonfire1119\Cors\Middleware\CorsMiddleware` in the $app->middleware() call of your `bootstrap/app.php` file.
+If you want CORS enabled for every HTTP request to your application, simply list the middleware class `Dragonfire1119\Cors\Middleware\CorsMiddleware` in the $app->middleware() call of your `bootstrap/app.php` file.
 
 ### CORS for Routes ###
 
