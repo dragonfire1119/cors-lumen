@@ -19,7 +19,7 @@
     ],
     "require": {
         "php": ">=5.4.0",
-        "illuminate/support": "~5.0.17",
+        "illuminate/support": "~5.1.1",
         "asm89/stack-cors": "0.2.x"
     },
     "autoload": {
