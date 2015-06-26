@@ -67,10 +67,14 @@ class CorsMiddleware
 		));
 
 		$cors->addActualRequestHeaders($response, $request);
-		$cors->handlePreflightRequest($request);
+		$preflight = $cors->handlePreflightRequest($request);
 		$cors->isActualRequestAllowed($request);
 		$cors->isCorsRequest($request);
 		$cors->isPreflightRequest($request);
+		
+		$response->headers->add($preflight->headers->all());
+
+		return $response;
 	}
 
 	/**
